@@ -4,7 +4,7 @@ import com.ecommerce.project.exceptions.APIException;
 import com.ecommerce.project.model.Category;
 import com.ecommerce.project.payload.CategoryDTO;
 import com.ecommerce.project.payload.CategoryResponse;
-import com.ecommerce.project.respository.CategoryRespository;
+import com.ecommerce.project.respository.CategoryRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,11 +19,11 @@ import java.util.List;
 @Service
 public class CategoryServiceImplementation implements CategoryService {
 
-    private final CategoryRespository categoryRespository;
+    private final CategoryRepository categoryRepository;
     private final ModelMapper modelMapper;
 
-    public CategoryServiceImplementation(CategoryRespository categoryRespository, ModelMapper modelMapper) {
-        this.categoryRespository = categoryRespository;
+    public CategoryServiceImplementation(CategoryRepository categoryRepository, ModelMapper modelMapper) {
+        this.categoryRepository = categoryRepository;
         this.modelMapper = modelMapper;
     }
 
@@ -33,7 +33,7 @@ public class CategoryServiceImplementation implements CategoryService {
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
         Pageable pageDetails = PageRequest.of(pageNumber, pageSize,sortByAndOrder);
-        Page<Category> categoryPage  = categoryRespository.findAll(pageDetails);
+        Page<Category> categoryPage  = categoryRepository.findAll(pageDetails);
         List<Category> categories = categoryPage.getContent();
         if (categories.isEmpty()) {
             throw new APIException("Category List is empty");
@@ -49,9 +49,9 @@ public class CategoryServiceImplementation implements CategoryService {
     @Override
     public CategoryDTO createCategory(CategoryDTO categoryDTO) {
         Category category = modelMapper.map(categoryDTO, Category.class);
-        Category savedCategory = categoryRespository.findByCategoryName(category.getCategoryName());
+        Category savedCategory = categoryRepository.findByCategoryName(category.getCategoryName());
         if (savedCategory == null) {
-            return modelMapper.map(categoryRespository.save(category), CategoryDTO.class);
+            return modelMapper.map(categoryRepository.save(category), CategoryDTO.class);
         } else
             throw new APIException("Category with name " + category.getCategoryName() + " present at id: " + savedCategory.getCategoryId());
     }
@@ -68,9 +68,9 @@ public class CategoryServiceImplementation implements CategoryService {
 ////        if (category == null) return "Category Not found"
 //        categoryRespository.delete(category);
 
-        Category category = categoryRespository.findById(categoryId)
+        Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new APIException("Category Not found in database"));
-        categoryRespository.delete(category);
+        categoryRepository.delete(category);
 
         return modelMapper.map(category, CategoryDTO.class);
 
@@ -90,11 +90,11 @@ public class CategoryServiceImplementation implements CategoryService {
 //        Category savedCategory = categoryRespository.save(existingCategory);
 //        return savedCategory;
         //        return null;
-        Category category1 = categoryRespository.findById(categoryId)
+        Category category1 = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found in DB"));
         Category category = modelMapper.map(categoryDTO, Category.class);
         category1.setCategoryName(category.getCategoryName());
-        Category savedCategory = categoryRespository.save(category1);
+        Category savedCategory = categoryRepository.save(category1);
         return modelMapper.map(savedCategory, CategoryDTO.class);
     }
 }
