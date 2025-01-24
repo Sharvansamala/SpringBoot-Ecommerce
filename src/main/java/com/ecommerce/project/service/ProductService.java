@@ -5,7 +5,7 @@ import com.ecommerce.project.payload.ProductDTO;
 import com.ecommerce.project.payload.ProductResponse;
 
 public interface ProductService {
-    public ProductResponse getAllProducts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
+    ProductResponse getAllProducts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
 
 
     ProductDTO addProduct(Long categoryId, Product product);
@@ -13,4 +13,6 @@ public interface ProductService {
     ProductResponse getProductsByCatgory(Long categoryId);
 
     ProductResponse getProductByKeyword(String keyword);
+
+    ProductDTO updateProduct(Product product, Long productId);
 }

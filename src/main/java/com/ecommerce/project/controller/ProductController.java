@@ -5,7 +5,6 @@ import com.ecommerce.project.model.Product;
 import com.ecommerce.project.payload.ProductDTO;
 import com.ecommerce.project.payload.ProductResponse;
 import com.ecommerce.project.service.ProductServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,8 +13,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class ProductController {
 
-    @Autowired
-    private ProductServiceImpl productService;
+    private final ProductServiceImpl productService;
+
+    public ProductController(ProductServiceImpl productService) {
+        this.productService = productService;
+    }
 
     @GetMapping("/public/products")
     public ResponseEntity<ProductResponse> getAllProducts(
@@ -45,6 +47,13 @@ public class ProductController {
     public ResponseEntity<ProductDTO> addProduct(@RequestBody Product product, @PathVariable Long categoryId) {
         ProductDTO productDTO = productService.addProduct(categoryId, product);
         return new ResponseEntity<>(productDTO, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/admin/products/{productId}")
+    public ResponseEntity<ProductDTO> updateProduct(@RequestBody Product product
+            ,@PathVariable Long productId){
+        ProductDTO productDTO= productService.updateProduct(product,productId);
+        return new ResponseEntity<>(productDTO,HttpStatus.OK);
     }
 
 }
