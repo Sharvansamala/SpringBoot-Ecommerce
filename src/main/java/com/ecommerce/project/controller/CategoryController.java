@@ -27,11 +27,11 @@ public class CategoryController {
 //    @RequestMapping(value = "/public/categories", method = RequestMethod.GET)
     public ResponseEntity<CategoryResponse> getAllCategories(
             @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
-            @RequestParam(name = "pageSize",defaultValue = AppConstants.PAGE_SIZE,required = false) Integer pageSize,
-            @RequestParam(name = "sortBy" ,defaultValue = AppConstants.SORT_CATEGORIES_BY,required = false) String sortBy,
-            @RequestParam(name = "sortOrder",defaultValue = AppConstants.SORT_DIR,required = false) String sortOrder
+            @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+            @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_CATEGORIES_BY, required = false) String sortBy,
+            @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder
     ) {
-        return new ResponseEntity<>(categoryService.getAllCategories(pageNumber,pageSize,sortBy,sortOrder), HttpStatus.OK);
+        return new ResponseEntity<>(categoryService.getAllCategories(pageNumber, pageSize, sortBy, sortOrder), HttpStatus.OK);
     }
 
     @PostMapping("/public/category")
@@ -48,12 +48,7 @@ public class CategoryController {
 
     @PutMapping("/private/category/{categoryId}")
     public ResponseEntity<CategoryDTO> updateCategory(@Valid @RequestBody CategoryDTO categoryDTO, @PathVariable Long categoryId) {
-        try {
-            CategoryDTO categoryDTO1 = categoryService.updateCategory(categoryDTO, categoryId);
-            return new ResponseEntity<>(categoryDTO1, HttpStatus.OK);
-
-        } catch (ResponseStatusException e) {
-            throw new APIException("Unable to update category");
-        }
+        CategoryDTO categoryDTO1 = categoryService.updateCategory(categoryDTO, categoryId);
+        return new ResponseEntity<>(categoryDTO1, HttpStatus.OK);
     }
 }

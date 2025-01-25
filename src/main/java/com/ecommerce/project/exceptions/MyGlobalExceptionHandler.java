@@ -1,6 +1,9 @@
 package com.ecommerce.project.exceptions;
 
 import com.ecommerce.project.payload.APIResponse;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.UnexpectedTypeException;
+import org.hibernate.mapping.Constraint;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -43,7 +46,10 @@ public class MyGlobalExceptionHandler {
         return new ResponseEntity<>(new APIResponse(e.getMessage(),false),HttpStatus.BAD_REQUEST);
     }
 
-
+    @ExceptionHandler(UnexpectedTypeException.class)
+    public ResponseEntity<APIResponse> upd(UnexpectedTypeException e){
+        return new ResponseEntity<>(new APIResponse(e.getMessage(), false),HttpStatus.BAD_REQUEST);
+    }
 
 
 }
