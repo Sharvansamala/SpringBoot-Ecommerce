@@ -48,13 +48,14 @@ public class ProductServiceImpl implements ProductService {
         List<ProductDTO> productDTOList = productList.stream()
                 .map(product -> modelMapper.map(product, ProductDTO.class))
                 .toList();
-        return new ProductResponse(productDTOList,
-                productPage.getNumber(),
-                productPage.getSize(),
-                productPage.getTotalElements(),
-                productPage.getTotalPages(),
-                productPage.isLast()
-        );
+        return ProductResponse.builder()
+                .content(productDTOList)
+                .pageNumber(productPage.getNumber())
+                .pageSize(productPage.getSize())
+                .totalElements(productPage.getTotalElements())
+                .totalPages(productPage.getTotalPages())
+                .lastPage(productPage.isLast())
+                .build();
     }
 
     @Override
@@ -152,7 +153,6 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDTO updateProductImage(Long productId, MultipartFile image) {
         //Get Product from database
-
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "Product id", productId));
         //upload image to a file system (server ,s3)
@@ -168,6 +168,4 @@ public class ProductServiceImpl implements ProductService {
         //return Dto
         return modelMapper.map(savedProduct, ProductDTO.class);
     }
-
-
 }
