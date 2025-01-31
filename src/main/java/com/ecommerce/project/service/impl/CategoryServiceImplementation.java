@@ -1,10 +1,11 @@
-package com.ecommerce.project.service;
+package com.ecommerce.project.service.impl;
 
 import com.ecommerce.project.exceptions.APIException;
 import com.ecommerce.project.model.Category;
 import com.ecommerce.project.payload.CategoryDTO;
 import com.ecommerce.project.payload.CategoryResponse;
 import com.ecommerce.project.respository.CategoryRepository;
+import com.ecommerce.project.service.CategoryService;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+@SuppressWarnings("all")
 @Service
 public class CategoryServiceImplementation implements CategoryService {
 
@@ -66,7 +68,7 @@ public class CategoryServiceImplementation implements CategoryService {
 ////                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Category Not Found"));
 //                .orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
 ////        if (category == null) return "Category Not found"
-//        categoryRespository.delete(category);
+//        categoryRepository.delete(category);
 
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new APIException("Category Not found in database"));
