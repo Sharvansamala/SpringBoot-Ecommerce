@@ -5,10 +5,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Data
@@ -16,6 +13,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Valid
+@Table(name = "products")
+@ToString
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +26,6 @@ public class Product {
     private String image;
     @Size(min = 6,message = "Product name must contain atleast 3 characters")
     private String description;
-//    @Size(min = 1,message = "Minimum Quantity should be 1")
     private Integer quantity;
     private double price;
     private double discount;
@@ -35,4 +33,8 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
+
+    @ManyToOne
+    @JoinColumn(name = "seller_id")
+    private User user;
 }
