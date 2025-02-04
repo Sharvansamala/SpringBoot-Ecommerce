@@ -1,14 +1,15 @@
 package com.ecommerce.project.security.jwt;
 
+import com.ecommerce.project.security.services.UserDetailsImpl;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.security.Key;
 import java.util.Date;
 
 
@@ -28,16 +29,16 @@ public class JwtUtils {
         return null;
     }
 
-    public String generateTokenFromUsername(UserDetails userDetails){
-        String userName = userDetails.getUsername();
+    public String generateTokenFromUsername(UserDetailsImpl userDetails){
+        String username = userDetails.getUsername();
         return Jwts.builder()
-                .subject(userName)
+                .subject(username)
                 .issuedAt(new Date())
                 .expiration(new Date((new Date()).getTime()+jwtExpirationMs))
                 .signWith(key())
                 .compact();
     }
-    private SecretKey key(){
+    private Key key(){
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
     }
 

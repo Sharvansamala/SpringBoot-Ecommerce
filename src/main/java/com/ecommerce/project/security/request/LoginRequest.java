@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LoginRequest {
     @NotBlank
-    String userName;
+    String username;
     @NotBlank
     String password;
 }

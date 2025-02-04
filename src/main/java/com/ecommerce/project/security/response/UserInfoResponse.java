@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class UserInfoResponse {
-    private Long id;
+    private Long userId;
     private String jwtToken;
 
     private String userName;
