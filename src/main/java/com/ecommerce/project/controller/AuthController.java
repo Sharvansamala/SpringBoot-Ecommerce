@@ -13,7 +13,10 @@ import com.ecommerce.project.security.response.UserInfoResponse;
 import com.ecommerce.project.security.services.UserDetailsImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -39,6 +42,8 @@ public class AuthController {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private RoleRepository roleRepository;
+    @Value("${spring.app.jwtCookieName}")
+    private String jwtCookie;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -54,7 +59,8 @@ public class AuthController {
         }
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        String token = jwtUtils.generateTokenFromUsername(userDetails);
+//        String token = jwtUtils.generateTokenFromUsername(userDetails);
+        ResponseCookie cookie = jwtUtils.generateJwtCookie(userDetails);
 
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -63,9 +69,10 @@ public class AuthController {
                 .roles(roles)
                 .userId(userDetails.getId())
                 .userName(userDetails.getUsername())
-                .jwtToken(token)
                 .build();
-        return new ResponseEntity<>(userInfoResponse, HttpStatus.OK);
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,
+                        cookie.toString())
+                .body(userInfoResponse);
     }
 
     @PostMapping("/signup")
@@ -113,6 +120,35 @@ public class AuthController {
         }
         user.setRoles(roles);
         userRepository.save(user);
-        return new ResponseEntity<>(new MessageResponse("User Created Successfully"),HttpStatus.CREATED);
+        return new ResponseEntity<>(new MessageResponse("User Created Successfully"), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/username")
+    public ResponseEntity<String> currentUsername(Authentication authentication) {
+        if (authentication != null)
+            return new ResponseEntity<>(authentication.getName(), HttpStatus.OK);
+        return new ResponseEntity<>("", HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<UserInfoResponse> getUserDetails(Authentication authentication) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
+        UserInfoResponse userInfoResponse = UserInfoResponse.builder()
+                .roles(roles)
+                .userId(userDetails.getId())
+                .userName(userDetails.getUsername())
+                .build();
+        return ResponseEntity.ok().body(userInfoResponse);
+    }
+
+    @PostMapping("/signout")
+    public ResponseEntity<?> signout() {
+        ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,
+                        cookie.toString())
+                .body(new MessageResponse("You have been signed out"));
     }
 }
